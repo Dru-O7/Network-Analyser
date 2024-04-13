@@ -1,3 +1,4 @@
+# Imports
 import sys
 import logging
 from scapy.all import *
@@ -9,9 +10,19 @@ import numpy as np
 import socket
 import networkx as nx
 
+# Global Variables and Constants
+DEFAULT_PORT_SCAN_THRESHOLD = 100
+
+# Logging Configuration
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
+# Helper Functions
+def protocol_name(number):
+    protocol_dict = {1: 'ICMP', 6: 'TCP', 17: 'UDP'}
+    return protocol_dict.get(number, f"Unknown({number})")
+
+# Main Functions
 def read_pcap(pcap_file):
     try:
         packets = rdpcap(pcap_file)
@@ -48,15 +59,6 @@ def extract_packet_data(packets):
 
     return pd.DataFrame(packet_data)
 
-# Rest of your code remains unchanged
-
-
-def protocol_name(number):
-    protocol_dict = {1: 'ICMP', 6: 'TCP', 17: 'UDP'}
-    return protocol_dict.get(number, f"Unknown({number})")
-
-
-
 def analyze_packet_data(df):
     total_bandwidth = df["size"].sum()
     protocol_counts = df["protocol"].value_counts(normalize=True) * 100
@@ -81,7 +83,6 @@ def analyze_packet_data(df):
 
     return total_bandwidth, protocol_counts_df, ip_communication_table, protocol_frequency, ip_communication_protocols
 
-
 def extract_packet_data_security(packets):
     packet_data = []
 
@@ -101,7 +102,7 @@ def extract_packet_data_security(packets):
 
     return pd.DataFrame(packet_data)
 
-def detect_port_scanning(df,port_scan_threshold):
+def detect_port_scanning(df, port_scan_threshold):
     port_scan_df = df.groupby(['src_ip', 'dst_port']).size().reset_index(name='count')
     
     # Count the unique ports for each source IP
@@ -112,7 +113,6 @@ def detect_port_scanning(df,port_scan_threshold):
     
     if len(ip_addresses) > 0:
         logger.warning(f"Potential port scanning detected from IP addresses: {', '.join(ip_addresses)}")
-
 
 def print_results(total_bandwidth, protocol_counts_df, ip_communication_table, protocol_frequency, ip_communication_protocols):
     if total_bandwidth < 10**9:
@@ -135,21 +135,6 @@ def plot_all_graphs(protocol_counts, ip_communication_protocols):
     plot_protocol_distribution(protocol_counts)
     plot_protocol_percentage(protocol_counts)
 
-
-
-
-def main(pcap_file, port_scan_threshold):
-    packets = read_pcap(pcap_file)
-    df = extract_packet_data(packets)
-    total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols = analyze_packet_data(df)
-    print_results(total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols)
-    df_security = extract_packet_data_security(packets)
-    detect_port_scanning(df_security, port_scan_threshold)
-
-    # Plot the graph for protocol share between IP addresses
-    plot_protocol_percentage(protocol_counts)
-    plot_share_of_protocols_between_ips(ip_communication_protocols)
-
 def plot_share_of_protocols_between_ips(ip_communication_protocols):
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -167,8 +152,6 @@ def plot_share_of_protocols_between_ips(ip_communication_protocols):
     plt.tight_layout()
     plt.show()
 
-
-
 def plot_protocol_percentage(protocol_counts):
     fig, ax = plt.subplots(figsize=(8, 8))
     protocol_counts["Percentage"].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax)
@@ -177,7 +160,18 @@ def plot_protocol_percentage(protocol_counts):
     plt.tight_layout()
     plt.show()
 
+def main(pcap_file, port_scan_threshold):
+    packets = read_pcap(pcap_file)
+    df = extract_packet_data(packets)
+    total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols = analyze_packet_data(df)
+    print_results(total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols)
+    df_security = extract_packet_data_security(packets)
+    detect_port_scanning(df_security, port_scan_threshold)
 
+    plot_protocol_percentage(protocol_counts)
+    plot_share_of_protocols_between_ips(ip_communication_protocols)
+
+# Command Line Argument Parsing
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         logger.error("Please provide the path to the PCAP file.")
@@ -197,6 +191,3 @@ if __name__ == "__main__":
         port_scan_threshold = default_port_scan_threshold
     
     main(pcap_file, port_scan_threshold)
-
-
-
