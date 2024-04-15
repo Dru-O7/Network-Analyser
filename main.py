@@ -1,5 +1,7 @@
+
 # Imports
 import sys
+import os
 import logging
 from scapy.all import *
 import pandas as pd
@@ -9,6 +11,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import socket
 import networkx as nx
+
+if not os.path.exists('graphs'):
+    os.makedirs('graphs')
+
 
 # Global Variables and Constants
 DEFAULT_PORT_SCAN_THRESHOLD = 100
@@ -98,23 +104,26 @@ def extract_packet_data_security(packets):
             else:
                 dst_port = 0
 
-            packet_data.append({"src_ip": src_ip, "dst_ip": dst_ip, "protocol": protocol, "size": size, "dst_port": dst_port})
+            packet_data.append({"Source IP": src_ip, "Destination IP": dst_ip, "Protocol": protocol, "Size": size, "dst_port": dst_port})
 
     return pd.DataFrame(packet_data)
 
 def detect_port_scanning(df, port_scan_threshold):
-    port_scan_df = df.groupby(['src_ip', 'dst_port']).size().reset_index(name='count')
+    port_scan_df = df.groupby(['Source IP', 'dst_port']).size().reset_index(name='count')
     
     # Count the unique ports for each source IP
-    unique_ports_per_ip = port_scan_df.groupby('src_ip').size().reset_index(name='unique_ports')
+    unique_ports_per_ip = port_scan_df.groupby('Source IP').size().reset_index(name='unique_ports')
     
     potential_port_scanners = unique_ports_per_ip[unique_ports_per_ip['unique_ports'] >= port_scan_threshold]
-    ip_addresses = potential_port_scanners['src_ip'].unique()
+    ip_addresses = potential_port_scanners['Source IP'].unique()
     
     if len(ip_addresses) > 0:
         logger.warning(f"Potential port scanning detected from IP addresses: {', '.join(ip_addresses)}")
 
-def print_results(total_bandwidth, protocol_counts_df, ip_communication_table, protocol_frequency, ip_communication_protocols):
+
+def format_results_as_html(total_bandwidth, protocol_counts_df, ip_communication_table, ip_communication_protocols):
+    html = ""
+
     if total_bandwidth < 10**9:
         bandwidth_unit = "Mbps"
         total_bandwidth /= 10**6
@@ -122,14 +131,19 @@ def print_results(total_bandwidth, protocol_counts_df, ip_communication_table, p
         bandwidth_unit = "Gbps"
         total_bandwidth /= 10**9
 
-    logger.info(f"Total bandwidth used: {total_bandwidth:.2f} {bandwidth_unit}")
-    logger.info("\nProtocol Distribution:\n")
-    logger.info(tabulate(protocol_counts_df, headers=["Protocol", "Count", "Percentage"], tablefmt="grid"))
-    logger.info("\nTop IP Address Communications:\n")
-    logger.info(tabulate(ip_communication_table, headers=["Source IP", "Destination IP", "Count", "Percentage"], tablefmt="grid", floatfmt=".2f"))
+    html += f"<p>Total bandwidth used: {total_bandwidth:.2f} {bandwidth_unit}</p>"
 
-    logger.info("\nShare of each protocol between IPs:\n")
-    logger.info(tabulate(ip_communication_protocols, headers=["Source IP", "Destination IP", "Protocol", "Count", "Percentage"], tablefmt="grid", floatfmt=".2f"))
+    html += "<h3>Protocol Distribution:</h3>"
+    html += protocol_counts_df.to_html(index=False)
+
+    html += "<h3>Top IP Address Communications:</h3>"
+    html += ip_communication_table.to_html(index=False)
+
+    html += "<h3>Share of each protocol between IPs:</h3>"
+    html += ip_communication_protocols.to_html(index=False)
+
+    return html
+
 
 def plot_all_graphs(protocol_counts, ip_communication_protocols):
     plot_protocol_distribution(protocol_counts)
@@ -150,7 +164,11 @@ def plot_share_of_protocols_between_ips(ip_communication_protocols):
     plt.legend(title="Protocol")
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.show()
+    
+    # Save the plot as an image
+    plt.savefig('graphs/share_of_protocols_between_ips.png')
+    plt.close()
+
 
 def plot_protocol_percentage(protocol_counts):
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -158,13 +176,37 @@ def plot_protocol_percentage(protocol_counts):
     ax.set_ylabel("")
     ax.set_title("Distribution of Protocols")
     plt.tight_layout()
-    plt.show()
+    
+    # Save the plot as an image
+    plt.savefig('graphs/protocol_percentage.png')
+    plt.close()
 
-def main(pcap_file, port_scan_threshold):
+# Main Functions
+def main(pcap_file, port_scan_threshold, output_files):
     packets = read_pcap(pcap_file)
     df = extract_packet_data(packets)
     total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols = analyze_packet_data(df)
-    print_results(total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols)
+    
+    # Log the results
+    logger.info(f"Total bandwidth used: {total_bandwidth:.2f} Mbps")
+
+    # Save Protocol Distribution to CSV
+    protocol_counts_csv = output_files[0]
+    protocol_counts.to_csv(protocol_counts_csv, index=False)
+    logger.info(f"Protocol Distribution saved to: {protocol_counts_csv}")
+
+    # Save Top IP Address Communications to CSV
+    ip_communication_table_csv = output_files[1]
+    ip_communication_table.columns = ["Source IP", "Destination IP", "Protocol", "Count"]
+    ip_communication_table.to_csv(ip_communication_table_csv, index=False)
+    logger.info(f"Top IP Address Communications saved to: {ip_communication_table_csv}")
+
+
+    # Save Share of each protocol between IPs to CSV
+    ip_communication_protocols_csv = output_files[2]
+    ip_communication_protocols.to_csv(ip_communication_protocols_csv, index=False)
+    logger.info(f"Share of each protocol between IPs saved to: {ip_communication_protocols_csv}")
+
     df_security = extract_packet_data_security(packets)
     detect_port_scanning(df_security, port_scan_threshold)
 
@@ -173,21 +215,22 @@ def main(pcap_file, port_scan_threshold):
 
 # Command Line Argument Parsing
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        logger.error("Please provide the path to the PCAP file.")
+    if len(sys.argv) < 5:
+        logger.error("Please provide the path to the PCAP file and output filenames for Protocol Distribution, Top IP Address Communications, and Share of each protocol between IPs.")
         sys.exit(1)
     
     pcap_file = sys.argv[1]
+    output_files = sys.argv[2:5]
     
     default_port_scan_threshold = 100
 
-    if len(sys.argv) >= 3:
+    if len(sys.argv) >= 6:
         try:
-            port_scan_threshold = int(sys.argv[2])
+            port_scan_threshold = int(sys.argv[5])
         except ValueError:
             logger.error("Invalid port_scan_threshold value. Using the default value.")
             port_scan_threshold = default_port_scan_threshold
     else:
         port_scan_threshold = default_port_scan_threshold
     
-    main(pcap_file, port_scan_threshold)
+    main(pcap_file, port_scan_threshold, output_files)

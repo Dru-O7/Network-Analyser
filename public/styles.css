@@ -1,0 +1,17 @@
+/* styles.css */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 2px solid #ddd; /* Border around the entire table */
+}
+
+th, td {
+    border: 1px solid #ddd; /* Border for cells */
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: center; /* Center-align the text in header cells */
+}
