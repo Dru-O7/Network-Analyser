@@ -146,8 +146,8 @@ def format_results_as_html(total_bandwidth, protocol_counts_df, ip_communication
 
 
 def plot_all_graphs(protocol_counts, ip_communication_protocols):
-    plot_protocol_distribution(protocol_counts)
     plot_protocol_percentage(protocol_counts)
+    plot_share_of_protocols_between_ips(ip_communication_protocols)
 
 def plot_share_of_protocols_between_ips(ip_communication_protocols):
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -165,10 +165,9 @@ def plot_share_of_protocols_between_ips(ip_communication_protocols):
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     
-    # Save the plot as an image
+    # Save the plot as an image in the 'public' directory
     plt.savefig('graphs/share_of_protocols_between_ips.png')
     plt.close()
-
 
 def plot_protocol_percentage(protocol_counts):
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -177,9 +176,10 @@ def plot_protocol_percentage(protocol_counts):
     ax.set_title("Distribution of Protocols")
     plt.tight_layout()
     
-    # Save the plot as an image
+    # Save the plot as an image in the 'graphs' directory
     plt.savefig('graphs/protocol_percentage.png')
     plt.close()
+
 
 # Main Functions
 def main(pcap_file, port_scan_threshold, output_files):
@@ -197,7 +197,7 @@ def main(pcap_file, port_scan_threshold, output_files):
 
     # Save Top IP Address Communications to CSV
     ip_communication_table_csv = output_files[1]
-    ip_communication_table.columns = ["Source IP", "Destination IP", "Protocol", "Count"]
+    ip_communication_table.columns = ["Source IP", "Destination IP", "Count", "Percentage"]
     ip_communication_table.to_csv(ip_communication_table_csv, index=False)
     logger.info(f"Top IP Address Communications saved to: {ip_communication_table_csv}")
 
@@ -212,6 +212,7 @@ def main(pcap_file, port_scan_threshold, output_files):
 
     plot_protocol_percentage(protocol_counts)
     plot_share_of_protocols_between_ips(ip_communication_protocols)
+    plot_all_graphs(protocol_counts, ip_communication_protocols)
 
 # Command Line Argument Parsing
 if __name__ == "__main__":

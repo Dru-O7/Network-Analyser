@@ -18,71 +18,76 @@ uploadForm.addEventListener('submit', async (event) => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const { csvData, images } = await response.json();
+        const result = await response.json();
 
-        csvData.forEach(csv => {
-            const csvData = csv.data.split('\n');
-            const headers = csvData[0].split(',');
-            const rows = csvData.slice(1).map(row => row.split(','));
+        const csvData = result.csvData || [];
+        const images = result.images || [];
 
-            const table = document.createElement('table');
-            const thead = document.createElement('thead');
-            const tbody = document.createElement('tbody');
+        // Process CSV data if available
+        if (csvData.length > 0) {
+            csvData.forEach(csv => {
+                const csvRows = csv.data.split('\n');
+                const headers = csvRows[0].split(',');
+                const rows = csvRows.slice(1).map(row => row.split(','));
 
-            // Hardcoded table headings
-            const headingRow = document.createElement('tr');
-            const headingCell = document.createElement('th');
-            let headingText;
+                const table = document.createElement('table');
+                const thead = document.createElement('thead');
+                const tbody = document.createElement('tbody');
 
-            if (csv.filename === 'protocol_distribution.csv') {
-                headingText = 'Protocol Distribution';
-            } else if (csv.filename === 'top_ip_communications.csv') {
-                headingText = 'Top IP Address Communications';
-            } else if (csv.filename === 'share_of_protocol_between_ips.csv') {
-                headingText = 'Share of each protocol between IPs';
-            } else {
-                headingText = 'Unknown';
-            }
+                // Hardcoded table headings
+                const headingRow = document.createElement('tr');
+                const headingCell = document.createElement('th');
+                let headingText;
 
-            headingCell.textContent = headingText;
-            headingCell.setAttribute('colspan', headers.length);
-            headingRow.appendChild(headingCell);
-            thead.appendChild(headingRow);
+                if (csv.filename === 'protocol_distribution.csv') {
+                    headingText = 'Protocol Distribution';
+                } else if (csv.filename === 'top_ip_communications.csv') {
+                    headingText = 'Top IP Address Communications';
+                } else if (csv.filename === 'share_of_protocol_between_ips.csv') {
+                    headingText = 'Share of each protocol between IPs';
+                } else {
+                    headingText = 'Unknown';
+                }
 
-            // Create table header
-            const headerRow = document.createElement('tr');
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
+                headingCell.textContent = headingText;
+                headingCell.setAttribute('colspan', headers.length);
+                headingRow.appendChild(headingCell);
+                thead.appendChild(headingRow);
 
-            // Create table rows
-            rows.forEach(rowData => {
-                const tr = document.createElement('tr');
-                rowData.forEach(cellData => {
-                    const td = document.createElement('td');
-                    td.textContent = cellData;
-                    tr.appendChild(td);
+                // Create table header
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
                 });
-                tbody.appendChild(tr);
+                thead.appendChild(headerRow);
+
+                // Create table rows
+                rows.forEach(rowData => {
+                    const tr = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const td = document.createElement('td');
+                        td.textContent = cellData;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+
+                table.appendChild(thead);
+                table.appendChild(tbody);
+                tablesDiv.appendChild(table);
             });
+        }
 
-            table.appendChild(thead);
-            table.appendChild(tbody);
-
-            tablesDiv.appendChild(table);
-        });
-
-        // Display the images
-        images.forEach(image => {
-            const img = document.createElement('img');
-            img.src = `graphs/${image}`;
-
-            // Add image to the page
-            tablesDiv.appendChild(img);
-        });
+        // Display images if available
+        if (images.length > 0) {
+            images.forEach(image => {
+                const img = document.createElement('img');
+                img.src = `graphs/${image}`;
+                tablesDiv.appendChild(img);
+            });
+        }
     } catch (error) {
         console.error('Error:', error);
     }

@@ -19,8 +19,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Serve static files from 'public' directory
+// Serve static files from 'public' and 'graphs' directories
 app.use(express.static('public'));
+app.use(express.static('graphs'));
 
 // Endpoint to handle file upload and script execution
 app.post('/upload-pcap', upload.single('pcapfile'), (req, res) => {
