@@ -1,6 +1,6 @@
 const uploadForm = document.getElementById('uploadForm');
 const pcapFileInput = document.getElementById('pcapFileInput');
-const tablesDiv = document.getElementById('tables'); 
+const tablesDiv = document.getElementById('tables');
 
 // Check if file is already uploaded
 pcapFileInput.addEventListener('change', () => {
@@ -95,12 +95,14 @@ uploadForm.addEventListener('submit', async (event) => {
 
         // Display images if available
         if (images.length > 0) {
-            images.forEach(image => {
-                const img = document.createElement('img');
-                img.src = `graphs/${image}`; 
-                tablesDiv.appendChild(img); 
-            });
-            
+            // Create img elements for each image and append them to tablesDiv
+            const img1 = document.createElement('img');
+            img1.src = '/graphs/protocol_percentage.png';
+            tablesDiv.appendChild(img1);
+
+            const img2 = document.createElement('img');
+            img2.src = '/graphs/share_of_protocols_between_ips.png';
+            tablesDiv.appendChild(img2);
         }
 
     } catch (error) {
