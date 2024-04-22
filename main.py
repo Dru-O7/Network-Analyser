@@ -12,8 +12,8 @@ import numpy as np
 import socket
 import networkx as nx
 
-if not os.path.exists('graphs'):
-    os.makedirs('graphs')
+if not os.path.exists('public/graphs'):
+    os.makedirs('public/graphs')
 
 
 # Global Variables and Constants
@@ -166,7 +166,7 @@ def plot_share_of_protocols_between_ips(ip_communication_protocols):
     plt.tight_layout()
     
     # Save the plot as an image in the 'public' directory
-    plt.savefig('graphs/share_of_protocols_between_ips.png')
+    plt.savefig('public/graphs/share_of_protocols_between_ips.png')
     plt.close()
 
 def plot_protocol_percentage(protocol_counts):
@@ -177,7 +177,7 @@ def plot_protocol_percentage(protocol_counts):
     plt.tight_layout()
     
     # Save the plot as an image in the 'graphs' directory
-    plt.savefig('graphs/protocol_percentage.png')
+    plt.savefig('public/graphs/protocol_percentage.png')
     plt.close()
 
 

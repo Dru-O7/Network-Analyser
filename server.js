@@ -21,7 +21,7 @@ const upload = multer({ storage: storage });
 
 // Serve static files from 'public' and 'graphs' directories
 app.use(express.static('public'));
-app.use(express.static('graphs'));
+app.use('/public/graphs', express.static(path.join(__dirname, 'public', 'graphs')));
 
 // Endpoint to handle file upload and script execution
 app.post('/upload-pcap', upload.single('pcapfile'), (req, res) => {
