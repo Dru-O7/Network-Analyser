@@ -1,18 +1,115 @@
-/* styles.css */
+/* Container styles */
+:root {
+    --text: #16070b;
+    --background: #faf1f3;
+    --primary: #c14966;
+    --secondary: #dac693;
+    --accent: #cbcf70;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+
+}
+
+/* Header styles */
+.header {
+    background-color: var(--primary);
+    text-align: left;
+    padding: 20px 0;
+    padding-left: 10px;
+    width: 100%; 
+    box-sizing: border-box;
+}
+
+.header h1 {
+    color: white;
+    font-family: "Poppins", sans-serif;
+    font-size: 30px;
+    margin: 0;
+}
+
+/* Upload form styles */
+form {
+    display: inline-block; /* Ensure form elements are inline */
+    vertical-align: middle; /* Align vertically */
+    margin-bottom: 20px;
+}
+
+.custom-file-upload {
+    color: var(--text);
+    background-color: rgba(219, 199, 149, 0.3);
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 0 auto; /* Center horizontally */
+}
+.custom-file-upload:hover{
+    background-color: #eac693;
+}
+.custom-file-upload input[type="file"] {
+    display: none;
+}
+
+button {
+    background-color: var(--primary);
+    color: var(--background);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: rgb(184, 68, 95);
+}
+
+/* Table styles */
 table {
     border-collapse: collapse;
     width: 100%;
-    border: 2px solid #ddd; /* Border around the entire table */
+    border: 2px solid #ddd;
     margin-top: 20px;
 }
 
 th, td {
-    border: 1px solid #ddd; /* Border for cells */
+    border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    background-color: white;
 }
 
 th {
     background-color: #f2f2f2;
-    text-align: center; /* Center-align the text in header cells */
+    text-align: center;
+}
+
+/* New styles for file input */
+.file-uploaded input[type="file"] {
+    color: transparent;
+    display: none;
+}
+
+.file-uploaded {
+    background-color: var(--primary);
+    color: var(--background);
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+body {
+    background-color: var(--background);
+    font-family: "Poppins", sans-serif;
+}
+
+h1 {
+    color: var(--text);
 }

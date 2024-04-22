@@ -26,6 +26,7 @@ app.use(express.static('graphs'));
 // Endpoint to handle file upload and script execution
 app.post('/upload-pcap', upload.single('pcapfile'), (req, res) => {
     const filePath = req.file.path;
+    const fileName = req.file.originalname; // Get the original filename
     const command = 'python';
     const args = ['main.py', filePath, 'protocol_distribution.csv', 'top_ip_communications.csv', 'share_of_protocol_between_ips.csv']; // Specify the output CSV files
 
@@ -44,8 +45,11 @@ app.post('/upload-pcap', upload.single('pcapfile'), (req, res) => {
             csvData.push({ filename: file, data });
         }
 
-        // Send the CSV filenames to the client
-        res.json({ csvData });
+        // Check if a file has been uploaded before
+        const isFileUploaded = !!req.file;
+
+        // Send the CSV filenames and file upload status to the client
+        res.json({ csvData, fileName, isFileUploaded });
     });
 });
 

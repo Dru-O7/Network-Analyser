@@ -1,11 +1,22 @@
 const uploadForm = document.getElementById('uploadForm');
-const tablesDiv = document.getElementById('tables');
+const pcapFileInput = document.getElementById('pcapFileInput');
+const tablesDiv = document.getElementById('tables'); 
+
+// Check if file is already uploaded
+pcapFileInput.addEventListener('change', () => {
+    if (pcapFileInput.files.length > 0) {
+        pcapFileInput.style.backgroundColor = 'green';
+        // Display the name of the uploaded file
+        const fileNameDisplay = document.createElement('p');
+        fileNameDisplay.textContent = `Uploaded file: ${pcapFileInput.files[0].name}`;
+        uploadForm.appendChild(fileNameDisplay);
+    }
+});
 
 uploadForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const formData = new FormData();
-    const pcapFileInput = document.getElementById('pcapFileInput');
     formData.append('pcapfile', pcapFileInput.files[0]);
 
     try {
@@ -25,6 +36,8 @@ uploadForm.addEventListener('submit', async (event) => {
 
         // Process CSV data if available
         if (csvData.length > 0) {
+            // Clear previous tables
+            tablesDiv.innerHTML = '';
             csvData.forEach(csv => {
                 const csvRows = csv.data.split('\n');
                 const headers = csvRows[0].split(',');
@@ -76,7 +89,7 @@ uploadForm.addEventListener('submit', async (event) => {
 
                 table.appendChild(thead);
                 table.appendChild(tbody);
-                tablesDiv.appendChild(table);
+                tablesDiv.appendChild(table); 
             });
         }
 
@@ -85,9 +98,10 @@ uploadForm.addEventListener('submit', async (event) => {
             images.forEach(image => {
                 const img = document.createElement('img');
                 img.src = `graphs/${image}`;
-                tablesDiv.appendChild(img);
+                tablesDiv.appendChild(img); 
             });
         }
+
     } catch (error) {
         console.error('Error:', error);
     }
