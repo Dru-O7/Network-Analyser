@@ -14,13 +14,17 @@
 
 }
 
-/* Header styles */
+
 .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
     background-color: var(--primary);
     text-align: left;
     padding: 20px 0;
     padding-left: 10px;
-    width: 100%; 
     box-sizing: border-box;
 }
 
@@ -31,10 +35,9 @@
     margin: 0;
 }
 
-/* Upload form styles */
 form {
-    display: inline-block; /* Ensure form elements are inline */
-    vertical-align: middle; /* Align vertically */
+    display: inline-block; 
+    vertical-align: middle; 
     margin-bottom: 20px;
 }
 
@@ -47,7 +50,7 @@ form {
     text-align: center;
     font-size: 16px;
     border-radius: 5px;
-    margin: 0 auto; /* Center horizontally */
+    margin: 0 auto; 
 }
 .custom-file-upload:hover{
     background-color: #eac693;
@@ -90,7 +93,7 @@ th {
     text-align: center;
 }
 
-/* New styles for file input */
+
 .file-uploaded input[type="file"] {
     color: transparent;
     display: none;
@@ -108,6 +111,7 @@ th {
 body {
     background-color: var(--background);
     font-family: "Poppins", sans-serif;
+    padding-top: 70px; 
 }
 
 h1 {

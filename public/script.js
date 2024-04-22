@@ -97,9 +97,10 @@ uploadForm.addEventListener('submit', async (event) => {
         if (images.length > 0) {
             images.forEach(image => {
                 const img = document.createElement('img');
-                img.src = `graphs/${image}`;
+                img.src = `./graphs/${image}`; // Corrected path
                 tablesDiv.appendChild(img); 
             });
+            
         }
 
     } catch (error) {
