@@ -1,4 +1,4 @@
-
+# pip install scapy pandas tabulate tqdm matplotlib numpy networkx
 # Imports
 import sys
 import os
@@ -64,6 +64,17 @@ def extract_packet_data(packets):
             packet_data.append({"src_ip": src_ip, "src_domain": src_domain, "dst_ip": dst_ip, "dst_domain": dst_domain, "protocol": protocol, "size": size})
 
     return pd.DataFrame(packet_data)
+def extract_dns_requests(packets):
+    dns_requests = []
+
+    for packet in tqdm(packets, desc="Extracting DNS Requests", unit="packet"):
+        if DNS in packet and packet[DNS].qr == 0:  # Check if DNS packet is a request
+            src_ip = packet[IP].src
+            dst_ip = packet[IP].dst
+            query = packet[DNS].qd.qname.decode('utf-8').rstrip('.')  # Remove trailing dot from domain name
+            dns_requests.append({"Source IP": src_ip, "Destination IP": dst_ip, "Query": query})
+
+    return pd.DataFrame(dns_requests)
 
 def analyze_packet_data(df):
     total_bandwidth = df["size"].sum()
@@ -186,6 +197,8 @@ def main(pcap_file, port_scan_threshold, output_files):
     packets = read_pcap(pcap_file)
     df = extract_packet_data(packets)
     total_bandwidth, protocol_counts, ip_communication_table, protocol_frequency, ip_communication_protocols = analyze_packet_data(df)
+    dns_requests_df = extract_dns_requests(packets)
+
     
     # Log the results
     logger.info(f"Total bandwidth used: {total_bandwidth:.2f} Mbps")
@@ -213,6 +226,9 @@ def main(pcap_file, port_scan_threshold, output_files):
     plot_protocol_percentage(protocol_counts)
     plot_share_of_protocols_between_ips(ip_communication_protocols)
     plot_all_graphs(protocol_counts, ip_communication_protocols)
+
+    # Save to CSV
+    dns_requests_df.to_csv('dns_requests.csv', index=False)
 
 # Command Line Argument Parsing
 if __name__ == "__main__":

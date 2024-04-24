@@ -28,7 +28,7 @@ app.post('/upload-pcap', upload.single('pcapfile'), (req, res) => {
     const filePath = req.file.path;
     const fileName = req.file.originalname; // Get the original filename
     const command = 'python';
-    const args = ['main.py', filePath, 'protocol_distribution.csv', 'top_ip_communications.csv', 'share_of_protocol_between_ips.csv']; // Specify the output CSV files
+    const args = ['main.py', filePath, 'protocol_distribution.csv', 'top_ip_communications.csv', 'share_of_protocol_between_ips.csv', 'dns_requests.csv']; // Specify the output CSV files
 
     execFile(command, args, { maxBuffer: 1024 * 500 }, (error, stdout, stderr) => {
         if (error) {
@@ -37,7 +37,7 @@ app.post('/upload-pcap', upload.single('pcapfile'), (req, res) => {
         }
 
         // Read the generated CSV files
-        const files = ['protocol_distribution.csv', 'top_ip_communications.csv', 'share_of_protocol_between_ips.csv'];
+        const files = ['protocol_distribution.csv', 'top_ip_communications.csv', 'share_of_protocol_between_ips.csv', 'dns_requests.csv'];
         const csvData = [];
 
         for (const file of files) {

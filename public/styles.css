@@ -117,3 +117,13 @@ body {
 h1 {
     color: var(--text);
 }
+/* Add this CSS code to adjust the size and alignment of images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px; /* Adjust the margin bottom as needed */
+    max-height: 400px; /* Set the maximum height of the images */
+}
+

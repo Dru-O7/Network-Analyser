@@ -48,8 +48,6 @@ uploadForm.addEventListener('submit', async (event) => {
                 const tbody = document.createElement('tbody');
 
                 // Hardcoded table headings
-                const headingRow = document.createElement('tr');
-                const headingCell = document.createElement('th');
                 let headingText;
 
                 if (csv.filename === 'protocol_distribution.csv') {
@@ -58,10 +56,14 @@ uploadForm.addEventListener('submit', async (event) => {
                     headingText = 'Top IP Address Communications';
                 } else if (csv.filename === 'share_of_protocol_between_ips.csv') {
                     headingText = 'Share of each protocol between IPs';
+                } else if (csv.filename === 'dns_requests.csv') {
+                    headingText = 'DNS Requests';
                 } else {
                     headingText = 'Unknown';
                 }
 
+                const headingRow = document.createElement('tr');
+                const headingCell = document.createElement('th');
                 headingCell.textContent = headingText;
                 headingCell.setAttribute('colspan', headers.length);
                 headingRow.appendChild(headingCell);
@@ -93,17 +95,13 @@ uploadForm.addEventListener('submit', async (event) => {
             });
         }
 
-        // Display images if available
-        if (images.length > 0) {
-            // Create img elements for each image and append them to tablesDiv
             const img1 = document.createElement('img');
-            img1.src = '/graphs/protocol_percentage.png';
+            img1.src = './graphs/protocol_percentage.png';
             tablesDiv.appendChild(img1);
 
             const img2 = document.createElement('img');
-            img2.src = '/graphs/share_of_protocols_between_ips.png';
+            img2.src = './graphs/share_of_protocols_between_ips.png';
             tablesDiv.appendChild(img2);
-        }
 
     } catch (error) {
         console.error('Error:', error);
