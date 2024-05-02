@@ -1,23 +1,23 @@
-### Network Analyzer
+### 🌐 Network Analyzer
 
-This web interface allows users to upload PCAP files for analysis and view the results in the form of CSV reports and visualizations.
+This web interface empowers users to upload PCAP files for analysis and visualize the results through CSV reports and captivating charts.
 
-#### Requirements
+#### 📋 Requirements
 - Python libraries (specified in `requirements.txt`)
 - HTML, CSS, JavaScript
 - Node.js (for server-side scripting)
 
-#### Usage
-1. Ensure the required Python libraries are installed by running `pip install -r requirements.txt`.
-2. Start the server by running `node server.js`.
-3. Access the web interface at `http://localhost:3000`.
+#### 🚀 Usage
+1. Ensure the necessary Python libraries are installed by running `pip install -r requirements.txt`.
+2. Initiate the server by executing `node server.js`.
+3. Access the web interface at [http://localhost:3000](http://localhost:3000).
 
-#### Functionality
-- Users can upload a PCAP file using the provided form.
-- Upon file selection, the filename is displayed.
-- After submission, the PCAP file is analyzed by the Python script.
-- Analysis results, including CSV reports and visualizations, are displayed on the web page.
-- CSV reports include:
+#### 🛠️ Functionality
+- Users can effortlessly upload PCAP files using the provided form.
+- Upon file selection, the filename is prominently displayed.
+- After submission, the Python script analyzes the PCAP file.
+- Results, including CSV reports and visually appealing charts, are dynamically presented.
+- CSV reports comprise:
   - Protocol distribution
   - Top IP address communications
   - Share of each protocol between IPs
@@ -26,12 +26,12 @@ This web interface allows users to upload PCAP files for analysis and view the r
   - Distribution of protocols (pie chart)
   - Share of each protocol between IPs (stacked bar chart)
 
-#### Files
-- `main.py`: Python script for analyzing PCAP files.
-- `server.js`: Node.js server for handling file uploads and script execution.
-- `index.html`: HTML file for the web interface.
-- `styles.css`: CSS file for styling the web interface.
-- `script.js`: JavaScript file for client-side scripting.
+#### 📂 Files
+- `main.py`: Python script for PCAP file analysis.
+- `server.js`: Node.js server for file uploads and script execution.
+- `index.html`: HTML file for the user interface.
+- `styles.css`: CSS file for enhanced styling.
+- `script.js`: JavaScript file for interactive features.
 
-#### Demo and Installation
-Watch the demo and installation on [YouTube](https://youtu.be/3ZLSvOzc9ns).
+#### 📹 Demo and Installation
+Experience the demo and installation process on [YouTube](https://youtu.be/3ZLSvOzc9ns).
